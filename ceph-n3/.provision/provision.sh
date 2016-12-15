@@ -1,8 +1,8 @@
 #!/bin/sh -e
 
 echo ":) start to copy ceph.repo ... "
-cp /tmp/ceph.repo /etc/yum.repos.d/ceph.repo
-mv /etc/yum.repo.d/CentOS-Base.repo /etc/yum.repo.d/CentOS-Base.repo.bak
+cp /tmp/ceph.repo /etc/yum.repos.d/ceph-deploy.repo
+mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.bak
 wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
 
 # First method:
@@ -28,19 +28,22 @@ gpg --list-key --fingerprint 7F438280EF8D349F
 echo ":) start to update ... "
 yum -y update
 
+echo ":) start to enable 'rhel-7-server-extras-rpms' ... "
+subscription-manager repos --enable=rhel-7-server-extras-rpms
+yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+
 echo ":) start to install support tools ... "
 #yum -y install ceph-deploy
 yum -y install deltarpm
 yum -y install ntp ntpdate ntp-doc
 yum -y install openssh-server
 yum -y install rsync dos2unix iotop lsof man tmux bash-completion locate
-#yum -y install epel-release
 
 echo ":) start to update again ... "
 yum -y update
 yum -y upgrade
 
-#yum -y autoremove
+yum -y autoremove
 
 echo ":) start to check the ceph node user ... "
 if ! id -u fengzhiguo > /dev/null 2>&1 ; then
@@ -64,7 +67,6 @@ if ! id -u fengzhiguo > /dev/null 2>&1 ; then
   chmod 0440 /etc/sudoers.d/fengzhiguo
 
   echo ":) start to continue nopasswd configuring ... "
-  # 24 Dec 2015 : GWA : Try to speed up SSH. Doesn't help much.
   chmod 0666 /etc/ssh/sshd_config
   echo >> /etc/ssh/sshd_config
   echo "UseDNS no" >> /etc/ssh/sshd_config
@@ -74,14 +76,7 @@ if ! id -u fengzhiguo > /dev/null 2>&1 ; then
 
   echo ":) start to set the timezone to Asia/Shanghai ... "
   timedatectl set-timezone Asia/Shanghai
-  #dpkg-reconfigure --frontend noninteractive tzdata 2>/dev/null
 
 fi
 
-#updatedb
-#firewall-cmd --zone=public --add-port=6789/tcp --permanent
-#iptables -A INPUT -i {iface} -p tcp -s {ip-address}/{netmask} --dport 6789 -j ACCEPT
-
 yum -y install yum-plugin-priorities
-#yum -y install yum-plugin-priorities --enablerepo=rhel-7-server-optional-rpms
-

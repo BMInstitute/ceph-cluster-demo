@@ -51,7 +51,7 @@ Vagrant.configure("2") do |config|
    config.vm.provider "virtualbox" do |v|
   #   # Display the VirtualBox GUI when booting the machine
   #   vb.gui = true
-	   v.name = "ceph-n3-mon"
+	   v.name = "ceph-n3"
       v.cpus = "1"
       v.memory = "512"
   #
