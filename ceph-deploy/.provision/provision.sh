@@ -8,33 +8,22 @@ cp /tmp/sources.list /etc/apt/sources.list
 gpg --keyserver keyserver.ubuntu.com --recv-keys  16126D3A3E5C1192
 gpg -a --export  16126D3A3E5C1192 | sudo apt-key add -
 
-echo "start to update ..."
 apt-get -y update
-apt-get -y install software-properties-common locate tmux bash-completion man lsof iotop dos2unix
-#add-apt-repository ppa:geoffrey-challen/os161-toolchain > /dev/null 2>&1 && true
-#add-apt-repository ppa:git-core/ppa > /dev/null 2>&1 && true
 
-#echo "set grub-pc/install_devices /dev/sda" | debconf-communicate
-apt-get -y update
-apt-get -y upgrade
-
-echo "start to install wget"
 apt-get -y install wget
 
-# 24 Dec 2015 : GWA : Install OS/161 toolchain and Git.
-#apt-get install -y os161-toolchain git git-doc
+apt-get -y install software-properties-common locate tmux bash-completion man lsof iotop dos2unix
 
 wget -q -O- 'https://download.ceph.com/keys/release.asc' | sudo apt-key add -
 echo deb https://download.ceph.com/debian-jewel/ $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/ceph.list
 
-echo "start to update ..."
 apt-get -y update
 
-echo "start to install ceph-deploy ..."
 apt-get -y install ceph-deploy
 
-echo "start to autoremove ..."
-apt-get autoremove -y
+apt-get -y upgrade
+
+apt-get -y autoremove 
 
 echo "start to create the user [fengzhiguo] ..."
 # 24 Dec 2015 : GWA : Bootstrap fengzhiguo user.
@@ -44,7 +33,6 @@ if ! id -u fengzhiguo > /dev/null 2>&1 ; then
 
         echo "start to configure the .ssh key ..."
 	mkdir /home/fengzhiguo/.ssh
-	#mkdir /home/fengzhiguo/src
 
 	cp /home/vagrant/.ssh/authorized_keys /home/fengzhiguo/.ssh/
 	chmod 0700 /home/fengzhiguo/.ssh
